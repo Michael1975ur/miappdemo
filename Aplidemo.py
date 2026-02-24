@@ -85,7 +85,7 @@ if opcion == "2.0 Inicio":
         """)
     with col2:
         # Aquí cargarías tu imagen local: st.image("camion.jpg")
-        st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/CAT_797F_Mining_Truck.jpg/640px-CAT_797F_Mining_Truck.jpg", caption="Cat 797F en operación")
+        st.image("camion.jpg", caption="Cat 797F en operación")
 
 # 2.1 CARGAR DATA
 elif opcion == "2.1 Cargar Data":
@@ -217,4 +217,5 @@ elif opcion == "2.4 Predicción de Guardia":
     else:
 
         st.error("Debes entrenar el modelo en la sección 2.3 antes de predecir.")
+
 
