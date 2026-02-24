@@ -134,8 +134,9 @@ elif opcion == "2.2 Análisis de Data":
     else:
         st.warning("Primero carga la data en la sección 2.1")
 
-# 2.3 ML: ENTRENAMIENTO
-if st.session_state.data is not None:
+# --- 2.3 GENERACIÓN Y APLICACIÓN DE ML ---
+elif opcion == "2.3 Entrenamiento ML":
+    if st.session_state.data is not None:
         st.subheader("Pipeline de Entrenamiento")
         df = st.session_state.data.copy()
 
@@ -216,3 +217,4 @@ elif opcion == "2.4 Predicción de Guardia":
     else:
 
         st.error("Debes entrenar el modelo en la sección 2.3 antes de predecir.")
+
