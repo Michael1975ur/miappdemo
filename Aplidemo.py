@@ -135,53 +135,55 @@ elif opcion == "2.2 Análisis de Data":
         st.warning("Primero carga la data en la sección 2.1")
 
 # 2.3 ML: ENTRENAMIENTO
-elif opcion == "2.3 Entrenamiento ML":
-    if st.session_state.data is not None:
-        st.subheader("Pipeline de Entrenamiento: Regresión Logística")
+if st.session_state.data is not None:
+        st.subheader("Pipeline de Entrenamiento")
         df = st.session_state.data.copy()
 
-        # Paso 1: Nulos
+        # 1. Manejo de Nulos
         df = df.dropna()
-        st.info("✔️ Valores nulos eliminados.")
+        st.write("✔️ Valores nulos procesados.")
 
-        # Paso 2: Outliers (Método IQR)
+        # 2. Manejo de Outliers (¡OJO AQUÍ!)
+        # Solo aplicamos limpieza a variables que no definen el fallo directamente
+        # o usamos un multiplicador más alto (3.0 en lugar de 1.5) para no borrar los fallos.
         Q1 = df.quantile(0.25)
         Q3 = df.quantile(0.75)
         IQR = Q3 - Q1
-        df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
-        st.info("✔️ Outliers eliminados mediante técnica IQR.")
+        # Filtramos pero manteniendo un margen amplio
+        df = df[~((df < (Q1 - 3 * IQR)) | (df > (Q3 + 3 * IQR))).any(axis=1)]
+        st.write("✔️ Outliers filtrados (Margen amplio para conservar fallos).")
 
-        # Paso 3: Split y Escalamiento
+        # 3. Verificación de Clases (Seguro de vida para tu código)
+        if df['estado_maquina'].nunique() < 2:
+            st.error("⚠️ La limpieza de datos eliminó todos los casos de fallo. Se procedió a restaurar la data original para el entrenamiento.")
+            df = st.session_state.data.copy()
+
+        # 4. Preparación y Escalamiento
         X = df.drop('estado_maquina', axis=1)
         y = df['estado_maquina']
         
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
         
         scaler = StandardScaler()
         X_train_scaled = scaler.fit_transform(X_train)
         X_test_scaled = scaler.transform(X_test)
-        st.info("✔️ Variables escaladas (StandardScaler).")
+        st.write("✔️ Escalamiento de variables completado.")
 
-        # Paso 4: Entrenamiento
-        model = LogisticRegression()
+        # 5. Entrenamiento
+        model = LogisticRegression(class_weight='balanced') # Ayuda si hay pocos fallos
         model.fit(X_train_scaled, y_train)
         
-        # Guardar en session_state
+        # Guardar en la sesión
         st.session_state.modelo = model
         st.session_state.scaler = scaler
         
-        st.success("🚀 Modelo de ML entrenado y generado")
+        st.success("✅ Modelo de ML entrenado y generado")
         
-        # Evaluación
-        y_pred = model.predict(X_test_scaled)
-        acc = accuracy_score(y_test, y_pred)
-        st.metric("Precisión del Modelo (Accuracy)", f"{acc:.2%}")
-        
-        st.text("Reporte de Clasificación:")
-        st.text(classification_report(y_test, y_pred))
+        # Evaluación visual para la clase
+        acc = accuracy_score(y_test, model.predict(X_test_scaled))
+        st.metric("Precisión del Modelo", f"{acc:.2%}")
     else:
-        st.warning("Carga los datos primero.")
-
+        st.warning("Por favor, carga la data en la sección 2.1")
 # 2.4 PREDICCIÓN
 elif opcion == "2.4 Predicción de Guardia":
     if st.session_state.modelo is not None:
@@ -212,4 +214,5 @@ elif opcion == "2.4 Predicción de Guardia":
             else:
                 st.success(f"OPERACIÓN NORMAL: El camión puede iniciar guardia. Riesgo de falla: {probabilidad:.2%}")
     else:
+
         st.error("Debes entrenar el modelo en la sección 2.3 antes de predecir.")
