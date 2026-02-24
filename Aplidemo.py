@@ -41,18 +41,27 @@ st.markdown(f"""
     </style>
     """, unsafe_allow_html=True)
 
-# HTML para la cabecera
-st.markdown(f"""
-    <div class="header-container">
-        <div class="logo-section">
-            <img src="fondo1.jpg" width="{ANCHO_LOGO}" height="{ALTO_LOGO}">
+# --- CABECERA CON ST.COLUMNS Y ST.IMAGE ---
+
+# 1. Definimos las columnas con la proporción 1/3 y 2/3
+col_logo, col_titulo = st.columns([1, 2])
+
+with col_logo:
+    # Aquí cargamos la imagen localmente de forma directa
+    # Puedes customizar el ancho aquí mismo con 'width'
+    st.image("fondo1.jpg", width=200) 
+
+with col_titulo:
+    # Usamos markdown solo para el texto y el estilo
+    st.markdown(f"""
+        <div style="height: 100px; display: flex; flex-direction: column; justify-content: center;">
+            <h1 style="margin: 0;">Sistema de Predicción de Fallas Críticas</h1>
+            <h3 style="margin: 0; color: gray;">Flota Cat 797F - VIMS Telemetry</h3>
         </div>
-        <div class="title-section">
-            <h1>Sistema de Predicción de Fallas Críticas - Flota Cat 797F</h1>
-            <p>Monitoreo Predictivo basado en Telemetría VIMS - Andes Peruanos</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+
+st.divider() # Una línea para separar la cabecera del cuerpo
+
 
 # --- SIDEBAR / MENÚ ---
 st.sidebar.title("Navegación")
@@ -217,5 +226,6 @@ elif opcion == "2.4 Predicción de Guardia":
     else:
 
         st.error("Debes entrenar el modelo en la sección 2.3 antes de predecir.")
+
 
 
