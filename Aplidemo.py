@@ -14,8 +14,8 @@ st.set_page_config(page_title="VIMS Predictor - Cat 797F", layout="wide")
 # --- CUSTOMIZACIÓN DE CABECERA ---
 # Puedes ajustar estos valores
 ALTO_CABECERA = "120px"
-ANCHO_LOGO = 482 # px
-ALTO_LOGO = 81  # px
+ANCHO_LOGO = 582 # px
+ALTO_LOGO = 181  # px
 
 st.markdown(f"""
     <style>
@@ -226,6 +226,7 @@ elif opcion == "2.4 Predicción de Guardia":
     else:
 
         st.error("Debes entrenar el modelo en la sección 2.3 antes de predecir.")
+
 
 
 
